@@ -37,9 +37,10 @@ namespace PacodelaCruz.AzureFunctions.Logging
                                     orderNumber,
                                     LoggingConstants.Status.Succeeded.ToString(),
                                     correlationId,
-                                    LoggingConstants.TrackingEventType.Subscriber.ToString());
+                                    LoggingConstants.TrackingEventType.Subscriber.ToString(),
+                                    "");
             }
-            catch (InvalidDataException)
+            catch (InvalidDataException ex)
             {
                 log.LogError(new EventId((int)LoggingConstants.EventId.ProcessingFailedInvalidData),
                                     LoggingConstants.Template,
@@ -48,11 +49,12 @@ namespace PacodelaCruz.AzureFunctions.Logging
                                     orderNumber,
                                     LoggingConstants.Status.Failed.ToString(),
                                     correlationId,
-                                    LoggingConstants.TrackingEventType.Subscriber.ToString());
+                                    LoggingConstants.TrackingEventType.Subscriber.ToString(),
+                                    $"Invalid Data. {ex.Message}");
             
                 throw;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 log.LogError(new EventId((int)LoggingConstants.EventId.ProcessingFailedUnhandledException),
                                     LoggingConstants.Template,
@@ -61,27 +63,29 @@ namespace PacodelaCruz.AzureFunctions.Logging
                                     orderNumber,
                                     LoggingConstants.Status.Failed.ToString(),
                                     correlationId,
-                                    LoggingConstants.TrackingEventType.Subscriber.ToString());
+                                    LoggingConstants.TrackingEventType.Subscriber.ToString(),
+                                    $"An unhandled exception occurred. {ex.Message}");
 
                 throw;
             }
         }
 
         /// <summary>
-        /// To simulate a processing of an order which can throw exceptions in certain conditions
+        /// Simulate a processing of an order which can throw exceptions in certain conditions
         /// </summary>
         /// <param name="order"></param>
         /// <returns></returns>
         private static void Process(object order)
         {
             Random random = new Random();
-            if (random.Next(0, 5) == 4)
+            int randomOutput = random.Next(0, 5);
+            if (randomOutput == 4)
             {
-                throw new InvalidDataException();
+                throw new InvalidDataException("Required fields are null or empty");
             }
-            else if (random.Next(0, 5) == 1)
+            else if (randomOutput == 1)
             {
-                throw new Exception();
+                throw new Exception("Catasfrofic failure!!!");
             }
         }
     }

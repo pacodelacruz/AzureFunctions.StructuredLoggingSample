@@ -1,0 +1,34 @@
+﻿traces 
+| sort by timestamp desc 
+| where customDimensions.EventId > 0 
+| where customDimensions.prop__TrackingEventType == 'Publisher'
+| project  Level = customDimensions.LogLevel 
+           , PublisherEventId = customDimensions.EventId
+           , PublisherEventDescription = customDimensions.prop__EventDescription
+           , PublisherTrackingEventType = customDimensions.prop__TrackingEventType
+           , PublisherTimestamp = timestamp 
+           , EntityType = customDimensions.prop__EntityType
+           , EntityId = customDimensions.prop__EntityId
+           , PublisherStatus = customDimensions.prop__Status
+           , CorrelationId = tostring(customDimensions.prop__CorrelationId)
+           , PublisherDescription = customDimensions.prop__Description
+| join kind = leftouter (     
+    traces 
+    | sort by timestamp desc 
+    | where customDimensions.EventId > 0 
+    | where customDimensions.prop__TrackingEventType == 'Subscriber'
+    | project  Level = customDimensions.LogLevel 
+            , SubscriberEventId = customDimensions.EventId
+            , SubscriberEventDescription = customDimensions.prop__EventDescription
+            , SubscriberTrackingEventType = customDimensions.prop__TrackingEventType
+            , SubscriberStatus = customDimensions.prop__Status
+            , SubscriberDescription = customDimensions.prop__Description   
+            , CorrelationId = tostring(customDimensions.prop__CorrelationId)
+    ) on CorrelationId
+| project EntityType
+        , EntityId 
+        , PublisherEventId 
+        , SubscriberEventId 
+        , PublisherStatus 
+        , SubscriberStatus 
+        , PublisherTimestamp 

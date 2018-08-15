@@ -47,7 +47,8 @@ namespace PacodelaCruz.AzureFunctions.Logging
                                     orderNumber,
                                     LoggingConstants.Status.Succeeded.ToString(),
                                     correlationId,
-                                    LoggingConstants.TrackingEventType.Publisher.ToString());
+                                    LoggingConstants.TrackingEventType.Publisher.ToString(),
+                                    "");
 
                 return new OkResult();
             }
@@ -60,7 +61,8 @@ namespace PacodelaCruz.AzureFunctions.Logging
                                     orderNumber, 
                                     LoggingConstants.Status.Failed.ToString(), 
                                     correlationId, 
-                                    LoggingConstants.TrackingEventType.Publisher.ToString());
+                                    LoggingConstants.TrackingEventType.Publisher.ToString(), 
+                                    "Order is not valid and cannot be sent for processing.");
 
                 outMessage = null;
                 return new BadRequestObjectResult("Order is not Valid");
