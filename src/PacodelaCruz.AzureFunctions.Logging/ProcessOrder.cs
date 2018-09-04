@@ -11,10 +11,11 @@ namespace PacodelaCruz.AzureFunctions.Logging
     {
         /// <summary>
         /// Sample Function to show structured and correlated logging on Azure Functions using ILogger.
-        /// Triggered by a message on a Service Bus Queue.
+        /// Triggered by a message on a Service Bus Queue. 
+        /// Simulates the Order processing and logs events accordingly. 
         /// </summary>
-        /// <param name="inMessage"></param>
-        /// <param name="correlationId"></param>
+        /// <param name="inMessage">Expects an order in the JSON format, with the 'orderNumber' property</param>
+        /// <param name="correlationId">Gets the CorrelationId property from the Service Bus Message</param>
         /// <param name="log"></param>
         [FunctionName("ProcessOrder")]
         public static void Run(
@@ -22,7 +23,6 @@ namespace PacodelaCruz.AzureFunctions.Logging
                 string correlationId,
                 ILogger log)
         {
-
             dynamic order = JsonConvert.DeserializeObject(inMessage);
             string orderNumber = order?.orderNumber;
 
@@ -30,6 +30,7 @@ namespace PacodelaCruz.AzureFunctions.Logging
             {
                 Process(order);
 
+                //Log a success event if there was no exception. 
                 log.LogInformation(new EventId((int)LoggingConstants.EventId.ProcessingSucceeded),
                                     LoggingConstants.Template,
                                     LoggingConstants.EventId.ProcessingSucceeded.ToString(),
@@ -37,11 +38,12 @@ namespace PacodelaCruz.AzureFunctions.Logging
                                     orderNumber,
                                     LoggingConstants.Status.Succeeded.ToString(),
                                     correlationId,
-                                    LoggingConstants.TrackingEventType.Subscriber.ToString(),
+                                    LoggingConstants.CheckPoint.Subscriber.ToString(),
                                     "");
             }
             catch (InvalidDataException ex)
             {
+                //Log an error for the corresponding exception type
                 log.LogError(new EventId((int)LoggingConstants.EventId.ProcessingFailedInvalidData),
                                     LoggingConstants.Template,
                                     LoggingConstants.EventId.ProcessingFailedInvalidData.ToString(),
@@ -49,13 +51,14 @@ namespace PacodelaCruz.AzureFunctions.Logging
                                     orderNumber,
                                     LoggingConstants.Status.Failed.ToString(),
                                     correlationId,
-                                    LoggingConstants.TrackingEventType.Subscriber.ToString(),
+                                    LoggingConstants.CheckPoint.Subscriber.ToString(),
                                     $"Invalid Data. {ex.Message}");
             
                 throw;
             }
             catch (Exception ex)
             {
+                //Log an error for an unexcepted exception
                 log.LogError(new EventId((int)LoggingConstants.EventId.ProcessingFailedUnhandledException),
                                     LoggingConstants.Template,
                                     LoggingConstants.EventId.ProcessingFailedUnhandledException.ToString(),
@@ -63,8 +66,8 @@ namespace PacodelaCruz.AzureFunctions.Logging
                                     orderNumber,
                                     LoggingConstants.Status.Failed.ToString(),
                                     correlationId,
-                                    LoggingConstants.TrackingEventType.Subscriber.ToString(),
-                                    $"An unhandled exception occurred. {ex.Message}");
+                                    LoggingConstants.CheckPoint.Subscriber.ToString(),
+                                    $"An unexcepted exception occurred. {ex.Message}");
 
                 throw;
             }

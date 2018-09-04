@@ -1,2 +1,18 @@
 {
+  "version": "2.0",
+  "logging": {
+    "logLevel": {
+      "default": "Information"
+    },
+    "aggregator": {
+      "batchSize": 100,
+      "flushTimeout": "00:00:10"
+    },
+    "applicationInsights": {
+      "sampling": {
+        "isEnabled": true,
+        "maxTelemetryItemsPerSecond": 10
+      }
+    }
+  }
 }

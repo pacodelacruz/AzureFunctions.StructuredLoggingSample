@@ -17,8 +17,9 @@ namespace PacodelaCruz.AzureFunctions.Logging
         /// <summary>
         /// Sample Function to show structured and correlated logging on Azure Functions using ILogger.
         /// Triggered by an Http post and drops a message into a Service Bus message queue.
+        /// Checks whether an order is valid and logs an event accordingly
         /// </summary>
-        /// <param name="req"></param>
+        /// <param name="req">Expects an order in the JSON format, with the 'orderNumber' property</param>
         /// <param name="outMessage"></param>
         /// <param name="log"></param>
         /// <returns></returns>
@@ -37,9 +38,9 @@ namespace PacodelaCruz.AzureFunctions.Logging
             if (IsOrderValid(order))
             {
                 outMessage = new Message(Encoding.ASCII.GetBytes(orderAsJson));
+                // Set the Service Bus Message CorrelationId property for correlation in the subscriber function
                 outMessage.CorrelationId = correlationId;
 
-                // http://jakeydocs.readthedocs.io/en/latest/fundamentals/logging.html
                 log.LogInformation(new EventId((int)LoggingConstants.EventId.SubmissionSucceeded),
                                     LoggingConstants.Template,
                                     LoggingConstants.EventId.SubmissionSucceeded.ToString(),
@@ -47,7 +48,7 @@ namespace PacodelaCruz.AzureFunctions.Logging
                                     orderNumber,
                                     LoggingConstants.Status.Succeeded.ToString(),
                                     correlationId,
-                                    LoggingConstants.TrackingEventType.Publisher.ToString(),
+                                    LoggingConstants.CheckPoint.Publisher.ToString(),
                                     "");
 
                 return new OkResult();
@@ -61,7 +62,7 @@ namespace PacodelaCruz.AzureFunctions.Logging
                                     orderNumber, 
                                     LoggingConstants.Status.Failed.ToString(), 
                                     correlationId, 
-                                    LoggingConstants.TrackingEventType.Publisher.ToString(), 
+                                    LoggingConstants.CheckPoint.Publisher.ToString(), 
                                     "Order is not valid and cannot be sent for processing.");
 
                 outMessage = null;

@@ -11,16 +11,16 @@
         // EntityId: Id of the Business Entity being processed: e.g. Order Number, Shipment Id, etc. 
         // Status: Status of the Log Event, e.g. Succeeded, Failed, Discarded.
         // CorrelationId: Unique identifier of the message that can be processed by more than one component. 
-        // TrackingEventType: To classify and be able to correlate tracking events.
+        // CheckPoint: To classify and be able to correlate tracking events.
         // Description: A detailed description of the log event. 
-        internal const string Template = "{EventDescription}, {EntityType}, {EntityId}, {Status}, {CorrelationId}, {TrackingEventType}, {Description}";
+        internal const string Template = "{EventDescription}, {EntityType}, {EntityId}, {Status}, {CorrelationId}, {CheckPoint}, {Description}";
 
         internal enum EntityType
         {
             Order,
             Shipment
         }
-        internal enum TrackingEventType
+        internal enum CheckPoint
         {
             Publisher,
             Subscriber

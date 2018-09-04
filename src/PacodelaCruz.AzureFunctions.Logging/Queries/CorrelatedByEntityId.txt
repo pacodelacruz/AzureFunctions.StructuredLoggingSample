@@ -1,13 +1,14 @@
-﻿let pEntityId = "1281";
+﻿//Change the pEntityId to get the traces for a particular business document
+let pEntityId = "2000";
 traces 
 | sort by timestamp desc 
-| where customDimensions.EventId > 0 
-| where customDimensions.prop__TrackingEventType == 'Publisher'
+| where customDimensions.EventId > 1 
+| where customDimensions.prop__CheckPoint == 'Publisher'
 | where customDimensions.prop__EntityId == pEntityId
 | project  Level = customDimensions.LogLevel 
            , PublisherEventId = customDimensions.EventId
            , PublisherEventDescription = customDimensions.prop__EventDescription
-           , PublisherTrackingEventType = customDimensions.prop__TrackingEventType
+           , PublisherCheckPoint = customDimensions.prop__CheckPoint
            , PublisherTimestamp = timestamp 
            , EntityType = customDimensions.prop__EntityType
            , EntityId = customDimensions.prop__EntityId
@@ -17,12 +18,12 @@ traces
 | join kind = leftouter (     
     traces 
     | sort by timestamp desc 
-    | where customDimensions.EventId > 0 
-    | where customDimensions.prop__TrackingEventType == 'Subscriber'
+    | where customDimensions.EventId > 1 
+    | where customDimensions.prop__CheckPoint == 'Subscriber'
     | project  Level = customDimensions.LogLevel 
             , SubscriberEventId = customDimensions.EventId
             , SubscriberEventDescription = customDimensions.prop__EventDescription
-            , SubscriberTrackingEventType = customDimensions.prop__TrackingEventType
+            , SubscriberCheckPoint = customDimensions.prop__CheckPoint
             , SubscriberStatus = customDimensions.prop__Status
             , SubscriberDescription = customDimensions.prop__Description   
             , CorrelationId = tostring(customDimensions.prop__CorrelationId)
