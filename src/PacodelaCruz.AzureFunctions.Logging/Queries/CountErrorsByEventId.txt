@@ -1,6 +1,6 @@
 ﻿traces 
 | sort by timestamp desc 
-| where customDimensions.EventId > 0 
+| where customDimensions.EventId > 1 
 | where customDimensions.LogLevel == 'Error'
 | project  EventId = tostring(customDimensions.EventId)
 | summarize Count = count(EventId) by EventId

@@ -1,6 +1,9 @@
-﻿traces 
+﻿//Properties used with Azure Functions structure logging are logged as customDimensions.prop__{name}
+//To filter events created by our custom structured logging, get only those traces where EventId > 1
+//To correlate different checkpoints, we use the CorrelationId
+traces 
 | sort by timestamp desc 
-| where customDimensions.EventId > 0 
+| where customDimensions.EventId > 1 
 | where customDimensions.prop__CheckPoint == 'Publisher'
 | project  Level = customDimensions.LogLevel 
            , PublisherEventId = customDimensions.EventId
@@ -15,7 +18,7 @@
 | join kind = leftouter (     
     traces 
     | sort by timestamp desc 
-    | where customDimensions.EventId > 0 
+    | where customDimensions.EventId > 1
     | where customDimensions.prop__CheckPoint == 'Subscriber'
     | project  Level = customDimensions.LogLevel 
             , SubscriberEventId = customDimensions.EventId
