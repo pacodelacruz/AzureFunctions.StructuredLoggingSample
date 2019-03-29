@@ -1,0 +1,14 @@
+﻿{
+  "IsEncrypted": false,
+  "Values": {
+    "APPINSIGHTS_INSTRUMENTATIONKEY": "12345678-1234-1234-1234-123456789012",
+    "FUNCTIONS_WORKER_RUNTIME": "dotnet",
+    "AzureWebJobsStorage": "DefaultEndpointsProtocol=https;AccountName=...;AccountKey=...;EndpointSuffix=core.windows.net",
+    "AzureWebJobsDashboard": "DefaultEndpointsProtocol=https;AccountName=...;AccountKey=...;EndpointSuffix=core.windows.net",
+    "ServiceBus:ConnectionString": "Endpoint=sb://....servicebus.windows.net/;SharedAccessKeyName=...;SharedAccessKey=..."
+  },
+  "Host": {
+    "LocalHttpPort": 7071,
+    "CORS": "*"
+  }
+}
