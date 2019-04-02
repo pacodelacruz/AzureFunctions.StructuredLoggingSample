@@ -4,11 +4,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.ServiceBus;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
+using Microsoft.Azure.WebJobs.ServiceBus;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace PacodelaCruz.AzureFunctions.Logging
 {
@@ -24,10 +26,10 @@ namespace PacodelaCruz.AzureFunctions.Logging
         /// <param name="log"></param>
         /// <returns></returns>
         [FunctionName("SubmitOrder")]
-        public static IActionResult Run(
+        public static async Task<IActionResult> Run(
                 [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "order")]
                 HttpRequest req, 
-                [ServiceBus("orders", Connection = "ServiceBus:ConnectionString")] out Message outMessage,
+                [ServiceBus("orders", Connection = "ServiceBus:ConnectionString" , EntityType = EntityType.Queue)] IAsyncCollector<Message> outMessages,
                 ILogger log)
         {
             string orderAsJson = new StreamReader(req.Body).ReadToEnd();
@@ -37,9 +39,12 @@ namespace PacodelaCruz.AzureFunctions.Logging
 
             if (IsOrderValid(order))
             {
-                outMessage = new Message(Encoding.ASCII.GetBytes(orderAsJson));
-                // Set the Service Bus Message CorrelationId property for correlation in the subscriber function
-                outMessage.CorrelationId = correlationId;
+                Message outMessage = new Message(Encoding.ASCII.GetBytes(orderAsJson))
+                {
+                    // Set the Service Bus Message CorrelationId property for correlation in the subscriber function
+                    CorrelationId = correlationId
+                };
+                await outMessages.AddAsync(outMessage);
 
                 log.LogInformation(new EventId((int)LoggingConstants.EventId.SubmissionSucceeded),
                                     LoggingConstants.Template,
@@ -64,8 +69,7 @@ namespace PacodelaCruz.AzureFunctions.Logging
                                     correlationId, 
                                     LoggingConstants.CheckPoint.Publisher.ToString(), 
                                     "Order is not valid and cannot be sent for processing.");
-
-                outMessage = null;
+                
                 return new BadRequestObjectResult("Order is not Valid");
             }
         }

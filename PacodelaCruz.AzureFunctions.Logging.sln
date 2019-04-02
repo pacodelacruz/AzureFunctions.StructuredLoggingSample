@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27703.2042
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PacodelaCruz.AzureFunctions.Logging", "PacodelaCruz.AzureFunctions.Logging\PacodelaCruz.AzureFunctions.Logging.csproj", "{C7B63053-0194-47D5-B3C2-2166CA8DADAE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PacodelaCruz.AzureFunctions.Logging", "src\PacodelaCruz.AzureFunctions.Logging\PacodelaCruz.AzureFunctions.Logging.csproj", "{C7B63053-0194-47D5-B3C2-2166CA8DADAE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

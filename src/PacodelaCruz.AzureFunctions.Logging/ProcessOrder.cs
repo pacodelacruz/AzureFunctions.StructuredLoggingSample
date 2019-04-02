@@ -21,6 +21,8 @@ namespace PacodelaCruz.AzureFunctions.Logging
         public static void Run(
                 [ServiceBusTrigger("orders", Connection = "ServiceBus:ConnectionString")] string inMessage,
                 string correlationId,
+                int deliveryCount,
+                string messageId, 
                 ILogger log)
         {
             dynamic order = JsonConvert.DeserializeObject(inMessage);

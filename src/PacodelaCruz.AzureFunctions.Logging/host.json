@@ -1,17 +1,32 @@
 {
   "version": "2.0",
+  "extensions": {
+    "serviceBus": {
+      "prefetchCount": 100,
+      "messageHandlerOptions": {
+        "autoComplete": true,
+        "maxConcurrentCalls": 32,
+        "maxAutoRenewDuration": "00:55:00"
+      }
+    },
+    "http": {
+      "routePrefix": "api",
+      "maxOutstandingRequests": 200,
+      "maxConcurrentRequests": 100,
+      "dynamicThrottlesEnabled": true
+    }
+  },
   "logging": {
     "logLevel": {
-      "default": "Information"
+      "default": "Debug"
     },
     "aggregator": {
       "batchSize": 100,
       "flushTimeout": "00:00:10"
     },
     "applicationInsights": {
-      "sampling": {
-        "isEnabled": true,
-        "maxTelemetryItemsPerSecond": 10
+      "samplingSettings": {
+        "isEnabled": false
       }
     }
   }
